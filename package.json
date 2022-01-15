@@ -17,6 +17,10 @@
 		"ejs"
 	],
 	"type": "module",
+	"files": [
+		"index.js",
+		"index.d.ts"
+	],
 	"main": "index.js",
 	"exports": {
 		".": {
