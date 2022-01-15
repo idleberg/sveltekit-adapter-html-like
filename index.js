@@ -66,97 +66,106 @@ export default function ({
 				filesOnly: true
 			});
 
-			await Promise.allSettled(htmlFiles.map(async htmlFile => {
-				const htmlContents = await readFile(htmlFile, 'utf8');
-				const dom = new JSDOM(htmlContents);
+			await Promise.allSettled(
+				htmlFiles.map(async (htmlFile) => {
+					const htmlContents = await readFile(htmlFile, 'utf8');
+					const dom = new JSDOM(htmlContents);
 
-				if (injectTo?.length) {
-					const targetElements = Object.keys(injectTo);
+					if (injectTo?.length) {
+						const targetElements = Object.keys(injectTo);
 
-					targetElements.map((targetElement) => {
-						if (!['head', 'body'].includes(targetElement)) {
-							builder.log.warn(`Skipping unsupported injection element: ${targetElement}`);
-							return;
-						}
-
-						const injectToPositions = Object.keys(injectTo[targetElement]);
-
-						injectToPositions.map((injectToPosition) => {
-							if (!['beforebegin', 'afterbegin', 'beforeend', 'afterend'].includes(injectToPosition)) {
-								builder.log.warn(
-									`Skipping unsupported insertAdjacentHTML position: ${injectToPosition}`
-								);
+						targetElements.map((targetElement) => {
+							if (!['head', 'body'].includes(targetElement)) {
+								builder.log.warn(`Skipping unsupported injection element: ${targetElement}`);
 								return;
 							}
 
-							const injectToText = String(injectTo[targetElement][injectToPosition]);
-							const injectToHash = crypto.createHash('sha256').update(injectToText).digest('hex');
-							const injectToTag = `<!-- inject:${sessionUUID}:${injectToHash} -->`;
+							const injectToPositions = Object.keys(injectTo[targetElement]);
 
-							if (!replace.some(item => item.from === injectToTag)) {
-								replace.push({
-									from: injectToTag,
-									to: injectToText,
-									many: true
-								});
-							}
+							injectToPositions.map((injectToPosition) => {
+								if (
+									!['beforebegin', 'afterbegin', 'beforeend', 'afterend'].includes(injectToPosition)
+								) {
+									builder.log.warn(
+										`Skipping unsupported insertAdjacentHTML position: ${injectToPosition}`
+									);
+									return;
+								}
 
-							builder.log.minor(`Injecting to ${injectToPosition}: '${injectToText}'`);
-							dom.window.document[targetElement].insertAdjacentHTML(
-								injectToPosition,
-								injectToTag
-							);
-						});
-					});
-				}
+								const injectToText = String(injectTo[targetElement][injectToPosition]);
+								const injectToHash = crypto.createHash('sha256').update(injectToText).digest('hex');
+								const injectToTag = `<!-- inject:${sessionUUID}:${injectToHash} -->`;
 
-				let outputHTML;
+								if (!replace.some((item) => item.from === injectToTag)) {
+									replace.push({
+										from: injectToTag,
+										to: injectToText,
+										many: true
+									});
+								}
 
-				try {
-					outputHTML = minify
-						? await minifier(dom.serialize(), {
-								collapseWhitespace: true,
-								minifyCSS: true,
-								minifyJS: true,
-								removeComments: false,
-								removeRedundantAttributes: true,
-								useShortDoctype: true
-							})
-						: prettier.format(dom.serialize(), {
-								parser: 'html',
-								printWidth: 120
+								builder.log.minor(`Injecting to ${injectToPosition}: '${injectToText}'`);
+								dom.window.document[targetElement].insertAdjacentHTML(
+									injectToPosition,
+									injectToTag
+								);
 							});
-					builder.log.minor('Formatting markup');
-				} catch (err) {
-					builder.log.error('Formatting markup failed');
-					throw Error(err);
-				}
+						});
+					}
 
-				const outFile = `${basename(htmlFile, '.html')}${targetExtension}`;
-				const outPath = join(dirname(htmlFile), outFile);
+					let outputHTML;
 
-				const phpContents = (replace && Object.values(replace)?.length)
-				? replace.reduce((previousValue, currentValue) => {
-						const replacer = currentValue.many ? 'replaceAll' : 'replace';
+					try {
+						outputHTML = minify
+							? await minifier(dom.serialize(), {
+									collapseWhitespace: true,
+									minifyCSS: true,
+									minifyJS: true,
+									removeComments: false,
+									removeRedundantAttributes: true,
+									useShortDoctype: true
+							  })
+							: prettier.format(dom.serialize(), {
+									parser: 'html',
+									printWidth: 120
+							  });
+						builder.log.minor('Formatting markup');
+					} catch (err) {
+						builder.log.error('Formatting markup failed');
+						throw Error(err);
+					}
 
-						if (!currentValue.from.startsWith('<!-- inject:sessionUUID:')) {
-							builder.log.minor(`Replacing ${currentValue.many ? 'all ' : ''}'${currentValue.from}' → '${currentValue.to}'`);
-						}
+					const outFile = `${basename(htmlFile, '.html')}${targetExtension}`;
+					const outPath = join(dirname(htmlFile), outFile);
 
-						return previousValue[replacer](currentValue.from, currentValue.to);
-					}, outputHTML)
-				: outputHTML;
+					const phpContents =
+						replace && Object.values(replace)?.length
+							? replace.reduce((previousValue, currentValue) => {
+									const replacer = currentValue.many ? 'replaceAll' : 'replace';
 
-				try {
-					builder.log.minor(`Writing to ${relative(pages, outPath)}`);
-					await writeFile(outPath, phpContents);
+									if (!currentValue.from.startsWith('<!-- inject:sessionUUID:')) {
+										builder.log.minor(
+											`Replacing ${currentValue.many ? 'all ' : ''}'${currentValue.from}' → '${
+												currentValue.to
+											}'`
+										);
+									}
 
-					builder.log.minor(`Deleting ${relative(pages, htmlFile)}`);
-					builder.rimraf(htmlFile);
-				} catch (err) {
-					throw Error(err);
-				}
-			}));
+									return previousValue[replacer](currentValue.from, currentValue.to);
+							  }, outputHTML)
+							: outputHTML;
+
+					try {
+						builder.log.minor(`Writing to ${relative(pages, outPath)}`);
+						await writeFile(outPath, phpContents);
+
+						builder.log.minor(`Deleting ${relative(pages, htmlFile)}`);
+						builder.rimraf(htmlFile);
+					} catch (err) {
+						throw Error(err);
+					}
+				})
+			);
 		}
 	};
 }
