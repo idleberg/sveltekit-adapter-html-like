@@ -1,7 +1,7 @@
 {
   "name": "sveltekit-adapter-html-like",
   "description": "SvelteKit adapter for HTML-like template engines such as PHP, Blade, Handlebars, etc.",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/idleberg/sveltekit-adapter-html-like"
