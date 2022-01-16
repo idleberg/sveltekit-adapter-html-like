@@ -1,25 +1,25 @@
-# sveltekit-adapter-template
+# sveltekit-adapter-html-like
 
 [Adapter](https://kit.svelte.dev/docs#adapters) for SvelteKit apps that prerenders your site as static files for template engines such as PHP, Blade, Handlebars, EJS... you name it!
 
 ## Usage
 
-Install with `npm i -D sveltekit-adapter-template`, then add the adapter to your `svelte.config.js`:
+Install with `npm i -D sveltekit-adapter-html-like`, then add the adapter to your `svelte.config.js`:
 
 ```js
 // svelte.config.js
-import adapter from 'sveltekit-adapter-template';
+import adapter from 'sveltekit-adapter-html-like';
 
 export default {
-	kit: {
-		adapter: adapter({
-			// default options are shown
-			pages: 'build',
-			assets: 'build',
-			fallback: null,
-			precompress: false
-		})
-	}
+  kit: {
+    adapter: adapter({
+      // default options are shown
+      pages: 'build',
+      assets: 'build',
+      fallback: null,
+      precompress: false
+    })
+  }
 };
 ```
 
@@ -58,15 +58,15 @@ Let's inject some WordPress tags into the page
 
 ```js
 adapter({
-	injectTo: {
-		head: {
-			beforeend: ['<?php wp_head(); ?>']
-		},
-		body: {
-			beforeend: ['<?php wp_footer(); ?>']
-		}
-	},
-	targetExtension: '.php'
+  injectTo: {
+    head: {
+      beforeend: ['<?php wp_head(); ?>']
+    },
+    body: {
+      beforeend: ['<?php wp_footer(); ?>']
+    }
+  },
+  targetExtension: '.php'
 });
 ```
 
@@ -78,14 +78,14 @@ String replacements run on every page
 
 ```js
 adapter({
-	replace: [
-		{
-			from: '<html lang="en">',
-			to: '<html <?php language_attributes(); ?>>'
-			// many: true (optional)
-		}
-	],
-	targetExtension: '.php'
+  replace: [
+    {
+      from: '<html lang="en">',
+      to: '<html <?php language_attributes(); ?>>'
+      // many: true (optional)
+    }
+  ],
+  targetExtension: '.php'
 });
 ```
 
@@ -95,7 +95,7 @@ Modifies the extension of the target file, e.g. `.php` or `.hbs`
 
 ## SPA mode
 
-You can use `sveltekit-adapter-template` to create a single-page app or SPA by specifying a **fallback page**.
+You can use `sveltekit-adapter-html-like` to create a single-page app or SPA by specifying a **fallback page**.
 
 > In most situations this is not recommended: it harms SEO, tends to slow down perceived performance, and makes your app inaccessible to users if JavaScript fails or is disabled (which happens [more often than you probably think](https://kryogenix.org/code/browser/everyonehasjs.html)).
 
@@ -103,14 +103,14 @@ The fallback page is a blank HTML page that loads your SvelteKit app and navigat
 
 ```js
 // svelte.config.js
-import adapter from 'sveltekit-adapter-template';
+import adapter from 'sveltekit-adapter-html-like';
 
 export default {
-	kit: {
-		adapter: adapter({
-			fallback: '200.html'
-		})
-	}
+  kit: {
+    adapter: adapter({
+      fallback: '200.html'
+    })
+  }
 };
 ```
 

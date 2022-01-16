@@ -1,0 +1,70 @@
+name: CI
+
+on: [push]
+
+jobs:
+  default:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node-version: ['12', '14', '16']
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install NSIS (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        brew update
+        brew install nsis
+
+    - name: Install NSIS (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run:   |
+        sudo apt-get -y update
+        sudo apt-get -y install nsis
+
+    - name: Install NSIS (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+        scoop bucket add nsis https://github.com/NSIS-Dev/scoop-nsis
+        scoop install nsis/nsis
+
+    - name: Print NSIS version
+      run: makensis -VERSION
+
+    - name: Print NSIS header info
+      run: makensis -HDRINFO
+
+    - name: Cache node modules
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+
+    - name: Install Package Dependencies
+      run: npm ci
+
+    - name: Lint Source
+      run: npm run lint --if-present
+
+    - name: Build Source
+      run: npm run build --if-present
+
+    - name: Run Tests
+      run: npm run test --if-present
