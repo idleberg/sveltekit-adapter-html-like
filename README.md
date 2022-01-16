@@ -6,7 +6,7 @@ This package is a fork of [@sveltejs/adapter-static](https://github.com/sveltejs
 
 - tag injection
 - string replacement
-- HTML minification
+- prettifies or minifies output
 - custom file extensions
 
 ## Usage
