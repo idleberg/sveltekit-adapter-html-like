@@ -1,6 +1,13 @@
 # sveltekit-adapter-html-like
 
-[Adapter](https://kit.svelte.dev/docs#adapters) for SvelteKit apps that prerenders your site as static files for template engines such as PHP, Blade, Handlebars, EJS... you name it!
+[Adapter](https://kit.svelte.dev/docs#adapters) for SvelteKit apps that prerenders your site as static files for template engines such as PHP, Blade, Handlebars, EJS etc.
+
+This package is a fork of [@sveltejs/adapter-static](https://github.com/sveltejs/kit/tree/master/packages/adapter-static) that adds a couple of extra features:
+
+- tag injection
+- string replacement
+- HTML minification
+- custom file extensions
 
 ## Usage
 
@@ -88,6 +95,8 @@ adapter({
   targetExtension: '.php'
 });
 ```
+
+### minify
 
 ### targetExtension
 
