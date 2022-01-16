@@ -30,7 +30,7 @@ jobs:
           version: 6
           run_install: |
             - recursive: true
-            args: [--frozen-lockfile, --strict-peer-dependencies]
+            - args: [--frozen-lockfile, --strict-peer-dependencies]
 
       - uses: actions/setup-node@v2
         with:
