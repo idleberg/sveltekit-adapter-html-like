@@ -159,8 +159,10 @@ export default function ({
             builder.log.minor(`Writing to ${relative(pages, outPath)}`);
             await writeFile(outPath, phpContents);
 
-            builder.log.minor(`Deleting ${relative(pages, htmlFile)}`);
-            builder.rimraf(htmlFile);
+            if (outPath !== htmlFile) {
+              builder.log.minor(`Deleting ${relative(pages, htmlFile)}`);
+              builder.rimraf(htmlFile);
+            }
           } catch (err) {
             throw Error(err);
           }
