@@ -19,9 +19,9 @@ export default function ({
   fallback,
   precompress = false,
   minify = false,
-  injectTo,
-  targetExtension = '.php',
-  replace
+  injectTo = {},
+  targetExtension = '.html',
+  replace = []
 } = {}) {
   return {
     name: 'sveltekit-adapter-html-like',
@@ -66,41 +66,43 @@ export default function ({
         filesOnly: true
       });
 
-      await Promise.allSettled(
+      await Promise.all(
         htmlFiles.map(async (htmlFile) => {
           const htmlContents = await readFile(htmlFile, 'utf8');
           const dom = new JSDOM(htmlContents);
 
-          if (injectTo?.length) {
-            const targetElements = Object.keys(injectTo);
+          const targetElements = Object.keys(injectTo);
 
-            targetElements.map((targetElement) => {
-              if (!['head', 'body'].includes(targetElement)) {
-                builder.log.warn(`Skipping unsupported injection element: ${targetElement}`);
+          targetElements.map((targetElement) => {
+            if (!['head', 'body'].includes(targetElement)) {
+              builder.log.warn(`Skipping unsupported injection element: ${targetElement}`);
+              return;
+            }
+
+            const injectToPositions = Object.keys(injectTo[targetElement]);
+
+            injectToPositions.map((injectToPosition) => {
+              if (
+                !['beforebegin', 'afterbegin', 'beforeend', 'afterend'].includes(injectToPosition)
+              ) {
+                builder.log.warn(
+                  `Skipping unsupported insertAdjacentHTML position: ${injectToPosition}`
+                );
                 return;
               }
 
-              const injectToPositions = Object.keys(injectTo[targetElement]);
+              const injectToPositions = Array.isArray(injectTo[targetElement][injectToPosition])
+                ? injectTo[targetElement][injectToPosition]
+                : Array(injectTo[targetElement][injectToPosition]);
 
-              injectToPositions.map((injectToPosition) => {
-                if (
-                  !['beforebegin', 'afterbegin', 'beforeend', 'afterend'].includes(injectToPosition)
-                ) {
-                  builder.log.warn(
-                    `Skipping unsupported insertAdjacentHTML position: ${injectToPosition}`
-                  );
-                  return;
-                }
-
-                const injectToText = String(injectTo[targetElement][injectToPosition]);
+              injectToPositions.map((injectToText) => {
                 const injectToHash = crypto.createHash('sha256').update(injectToText).digest('hex');
                 const injectToTag = `<!-- inject:${sessionUUID}:${injectToHash} -->`;
 
                 if (!replace.some((item) => item.from === injectToTag)) {
                   replace.push({
                     from: injectToTag,
-                    to: injectToText,
-                    many: true
+                    to: injectToText
                   });
                 }
 
@@ -111,7 +113,7 @@ export default function ({
                 );
               });
             });
-          }
+          });
 
           let outputHTML;
 
