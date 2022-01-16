@@ -19,13 +19,7 @@ import adapter from 'sveltekit-adapter-html-like';
 
 export default {
   kit: {
-    adapter: adapter({
-      // default options are shown
-      pages: 'build',
-      assets: 'build',
-      fallback: null,
-      precompress: false
-    })
+    adapter: adapter()
   }
 };
 ```
