@@ -1,6 +1,8 @@
 name: CI
 
-on: [push]
+on:
+- push
+- pull_request
 
 jobs:
   default:
@@ -15,27 +17,27 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Cache pnpm modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - uses: pnpm/action-setup@v2.0.1
+        with:
+          version: 6
+          run_install: |
+            - recursive: true
+            args: [--frozen-lockfile, --strict-peer-dependencies]
+
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Cache node modules
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
-      - name: Install Packages Dependencies
-        run: npm ci
-
       - name: Lint Source
-        run: npm run lint --if-present
+        run: pnpm run lint --if-present
 
       - name: Build Source
-        run: npm run build --if-present
+        run: pnpm run build --if-present
