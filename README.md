@@ -149,4 +149,4 @@ When operating in SPA mode, only pages that have the [`prerender`](https://kit.s
 
 ## License
 
-[MIT](LICENSE)
+This work is licensed under [The MIT License](LICENSE)
