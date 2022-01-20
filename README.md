@@ -95,6 +95,8 @@ String replacements run on every page
 
 **Example**
 
+Once again, a WordPress example
+
 ```js
 adapter({
   replace: [
