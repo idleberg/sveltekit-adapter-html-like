@@ -2,8 +2,8 @@
 
 [![npm](https://flat.badgen.net/npm/license/sveltekit-adapter-html-like)](https://www.npmjs.org/package/sveltekit-adapter-html-like)
 [![npm](https://flat.badgen.net/npm/v/sveltekit-adapter-html-like)](https://www.npmjs.org/package/sveltekit-adapter-html-like)
-[![CI](https://img.shields.io/github/workflow/status/idleberg/node-sveltekit-adapter-html-like/CI?style=flat-square)](https://github.com/idleberg/node-sveltekit-adapter-html-like/actions)
-[![David](https://flat.badgen.net/david/dep/idleberg/node-sveltekit-adapter-html-like)](https://david-dm.org/idleberg/node-sveltekit-adapter-html-like)
+[![CI](https://img.shields.io/github/workflow/status/idleberg/sveltekit-adapter-html-like/CI?style=flat-square)](https://github.com/idleberg/sveltekit-adapter-html-like/actions)
+[![David](https://flat.badgen.net/david/dep/idleberg/sveltekit-adapter-html-like)](https://david-dm.org/idleberg/sveltekit-adapter-html-like)
 
 [Adapter](https://kit.svelte.dev/docs#adapters) for SvelteKit apps that prerenders your site as static files for template engines such as PHP, Blade, Handlebars, EJS etc.
 
