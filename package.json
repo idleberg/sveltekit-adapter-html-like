@@ -37,8 +37,11 @@
     "test": "npm run lint"
   },
   "dependencies": {
+    "@iarna/toml": "^2.2.5",
+    "cosmiconfig": "^7.0.1",
     "html-minifier-terser": "^7.0.0-alpha.1",
     "jsdom": "^19.0.0",
+    "json": "^11.0.0",
     "prettier": "^2.5.1",
     "tiny-glob": "^0.2.9"
   },

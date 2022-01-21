@@ -1,12 +1,15 @@
-import { createReadStream, createWriteStream, promises as $fs, statSync } from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
+import { cosmiconfig, defaultLoaders } from 'cosmiconfig';
+import { createReadStream, createWriteStream, promises as $fs, statSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
 import { minify as minifier } from 'html-minifier-terser';
 import { pipeline } from 'node:stream';
 import { promisify } from 'node:util';
 import crypto from 'node:crypto';
 import glob from 'tiny-glob';
+import JSON5 from 'json5';
 import prettier from 'prettier';
+import TOML from '@iarna/toml';
 import zlib from 'node:zlib';
 
 const { readFile, writeFile } = $fs;
@@ -127,10 +130,7 @@ export default function ({
                   removeRedundantAttributes: true,
                   useShortDoctype: true
                 })
-              : prettier.format(dom.serialize(), {
-                  parser: 'html',
-                  printWidth: 120
-                });
+              : prettier.format(dom.serialize(), await getPrettierConfig());
             builder.log.minor('Formatting markup');
           } catch (err) {
             builder.log.error('Formatting markup failed');
@@ -210,4 +210,48 @@ async function compress_file(file, format = 'gz') {
   const destination = createWriteStream(`${file}.${format}`);
 
   await pipe(source, compress, destination);
+}
+
+async function getPrettierConfig() {
+  const explorer = cosmiconfig('prettier', {
+    searchPlaces: [
+      'package.json',
+      '.prettierrc',
+      '.prettierrc.json',
+      '.prettierrc.yaml',
+      '.prettierrc.yml',
+      '.prettierrc.json5',
+      '.prettierrc.js',
+      '.prettierrc.cjs',
+      'prettier.config.js',
+      'prettier.config.cjs',
+      '.prettierrc.toml'
+    ],
+    loaders: {
+      '.toml': (filePath, content) => {
+        try {
+          return TOML.parse(content);
+        } catch (error) {
+          error.message = `TOML Error in ${filePath}:\n${error.message}`;
+          throw error;
+        }
+      },
+      '.json5': (filePath, content) => {
+        try {
+          return JSON5.parse(content);
+        } catch (error) {
+          error.message = `TOML Error in ${filePath}:\n${error.message}`;
+          throw error;
+        }
+      },
+      noExt: defaultLoaders['.json']
+    }
+  });
+
+  return (
+    (await explorer.search()).config || {
+      parser: 'html',
+      printWidth: 120
+    }
+  );
 }
