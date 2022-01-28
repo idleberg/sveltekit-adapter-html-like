@@ -13,6 +13,9 @@
     "sveltekit",
     "php",
     "blade",
+    "embedded ruby",
+    "erb",
+    "moustache",
     "handlebars",
     "ejs"
   ],
