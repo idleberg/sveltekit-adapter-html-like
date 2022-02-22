@@ -152,6 +152,10 @@ export default {
 
 When operating in SPA mode, only pages that have the [`prerender`](https://kit.svelte.dev/docs#ssr-and-javascript-prerender) option set will be prerendered.
 
+## Related
+
+[Vite Assets in WordPress](https://github.com/idleberg/php-wordpress-vite-assets)
+
 ## License
 
 This work is licensed under [The MIT License](LICENSE)
