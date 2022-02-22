@@ -154,7 +154,7 @@ When operating in SPA mode, only pages that have the [`prerender`](https://kit.s
 
 ## Related
 
-[Vite Assets in WordPress](https://github.com/idleberg/php-wordpress-vite-assets)
+- [Vite Assets in WordPress](https://github.com/idleberg/php-wordpress-vite-assets)
 
 ## License
 
