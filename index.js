@@ -178,7 +178,7 @@ export default function ({
  * @param {string} directory
  */
 async function compress(directory) {
-  const files = await glob('**/*.{html,js,json,css,svg,xml}', {
+  const files = await glob('**/*.{html,js,json,css,svg,xml,wasm}', {
     cwd: directory,
     dot: true,
     absolute: true,
