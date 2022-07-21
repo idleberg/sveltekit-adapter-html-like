@@ -242,10 +242,12 @@ async function getPrettierConfig() {
     }
   });
 
-  return (
-    (await explorer.search()).config || {
-      parser: 'html',
-      printWidth: 120
-    }
-  );
+  let results = await explorer.search();
+  if (results) {
+    return results.config;
+  }
+  return {
+    parser: 'html',
+    printWidth: 120
+  }
 }
