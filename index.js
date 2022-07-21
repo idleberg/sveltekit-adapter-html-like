@@ -33,14 +33,8 @@ export default function ({
       builder.rimraf(assets);
       builder.rimraf(pages);
 
-      builder.writeStatic(assets);
+      builder.writePrerendered(pages, {fallback});
       builder.writeClient(assets);
-
-      await builder.prerender({
-        fallback,
-        all: !fallback,
-        dest: pages
-      });
 
       if (precompress) {
         if (pages === assets) {
