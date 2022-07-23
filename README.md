@@ -22,9 +22,9 @@ Install with `npm i -D sveltekit-adapter-html-like`, then add the adapter to you
 import adapter from 'sveltekit-adapter-html-like';
 
 export default {
-  kit: {
-    adapter: adapter()
-  }
+	kit: {
+		adapter: adapter()
+	}
 };
 ```
 
@@ -78,15 +78,15 @@ Let's inject some WordPress tags into the page
 
 ```js
 adapter({
-  injectTo: {
-    head: {
-      beforeend: ['<?php wp_head(); ?>']
-    },
-    body: {
-      beforeend: ['<?php wp_footer(); ?>']
-    }
-  },
-  targetExtension: '.php'
+	injectTo: {
+		head: {
+			beforeend: ['<?php wp_head(); ?>']
+		},
+		body: {
+			beforeend: ['<?php wp_footer(); ?>']
+		}
+	},
+	targetExtension: '.php'
 });
 ```
 
@@ -103,14 +103,14 @@ Once again, a WordPress example
 
 ```js
 adapter({
-  replace: [
-    {
-      from: '<html lang="en">',
-      to: '<html <?php language_attributes(); ?>>'
-      // many: true (optional)
-    }
-  ],
-  targetExtension: '.php'
+	replace: [
+		{
+			from: '<html lang="en">',
+			to: '<html <?php language_attributes(); ?>>'
+			// many: true (optional)
+		}
+	],
+	targetExtension: '.php'
 });
 ```
 
@@ -141,11 +141,11 @@ The fallback page is a blank HTML page that loads your SvelteKit app and navigat
 import adapter from 'sveltekit-adapter-html-like';
 
 export default {
-  kit: {
-    adapter: adapter({
-      fallback: '200.html'
-    })
-  }
+	kit: {
+		adapter: adapter({
+			fallback: '200.html'
+		})
+	}
 };
 ```
 
