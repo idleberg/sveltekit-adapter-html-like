@@ -42,15 +42,17 @@
   "dependencies": {
     "@iarna/toml": "^2.2.5",
     "cosmiconfig": "^7.0.1",
+    "eslint-plugin-node": "^11.1.0",
     "html-minifier-terser": "^7.0.0-alpha.1",
     "jsdom": "^19.0.0",
-    "json": "^11.0.0",
+    "json5": "^2.2.1",
     "prettier": "^2.5.1",
-    "tiny-glob": "^0.2.9"
+    "tiny-glob": "^0.2.9",
+    "vite": "^3.0.2"
   },
   "devDependencies": {
     "@sveltejs/eslint-config": "github:sveltejs/eslint-config#v5.8.0",
-    "@sveltejs/kit": "^1.0.0-next.288",
+    "@sveltejs/kit": "^1.0.0-next.391",
     "@typescript-eslint/eslint-plugin": "^5.13.0",
     "@typescript-eslint/parser": "^5.13.0",
     "eslint": "^8.10.0",

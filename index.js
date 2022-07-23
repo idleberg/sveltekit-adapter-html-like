@@ -33,14 +33,8 @@ export default function ({
       builder.rimraf(assets);
       builder.rimraf(pages);
 
-      builder.writeStatic(assets);
+      builder.writePrerendered(pages, {fallback});
       builder.writeClient(assets);
-
-      await builder.prerender({
-        fallback,
-        all: !fallback,
-        dest: pages
-      });
 
       if (precompress) {
         if (pages === assets) {
@@ -248,10 +242,12 @@ async function getPrettierConfig() {
     }
   });
 
-  return (
-    (await explorer.search()).config || {
-      parser: 'html',
-      printWidth: 120
-    }
-  );
+  let results = await explorer.search();
+  if (results) {
+    return results.config;
+  }
+  return {
+    parser: 'html',
+    printWidth: 120
+  }
 }
