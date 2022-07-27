@@ -16,17 +16,7 @@ const { readFile, writeFile } = $fs;
 const pipe = promisify(pipeline);
 
 /** @type {import('.')} */
-export default function ({
-	pages = 'build',
-	assets = pages,
-	fallback,
-	precompress = false,
-	minify = false,
-	injectTo = {},
-	prettify = true,
-	targetExtension = '.html',
-	replace = []
-} = {}) {
+export default function ({ pages = 'build', assets = pages, fallback, precompress = false, minify = false, injectTo = {}, prettify = true, targetExtension = '.html', replace = [] } = {}) {
 	return {
 		name: 'sveltekit-adapter-html-like',
 
@@ -84,18 +74,12 @@ export default function ({
 						const injectToPositions = Object.keys(injectTo[targetElement]);
 
 						injectToPositions.map((injectToPosition) => {
-							if (
-								!['beforebegin', 'afterbegin', 'beforeend', 'afterend'].includes(injectToPosition)
-							) {
-								builder.log.warn(
-									`Skipping unsupported insertAdjacentHTML position: ${injectToPosition}`
-								);
+							if (!['beforebegin', 'afterbegin', 'beforeend', 'afterend'].includes(injectToPosition)) {
+								builder.log.warn(`Skipping unsupported insertAdjacentHTML position: ${injectToPosition}`);
 								return;
 							}
 
-							const injectToPositions = Array.isArray(injectTo[targetElement][injectToPosition])
-								? injectTo[targetElement][injectToPosition]
-								: Array(injectTo[targetElement][injectToPosition]);
+							const injectToPositions = Array.isArray(injectTo[targetElement][injectToPosition]) ? injectTo[targetElement][injectToPosition] : Array(injectTo[targetElement][injectToPosition]);
 
 							injectToPositions.map((injectToText) => {
 								const injectToHash = crypto.createHash('sha256').update(injectToText).digest('hex');
@@ -109,10 +93,7 @@ export default function ({
 								}
 
 								builder.log.minor(`Injecting to ${injectToPosition}: '${injectToText}'`);
-								dom.window.document[targetElement].insertAdjacentHTML(
-									injectToPosition,
-									injectToTag
-								);
+								dom.window.document[targetElement].insertAdjacentHTML(injectToPosition, injectToTag);
 							});
 						});
 					});
@@ -128,10 +109,10 @@ export default function ({
 									removeComments: false,
 									removeRedundantAttributes: true,
 									useShortDoctype: true
-							  })
+							})
 							: prettify
-							? prettier.format(dom.serialize(), await getPrettierConfig())
-							: dom.serialize();
+								? prettier.format(dom.serialize(), await getPrettierConfig())
+								: dom.serialize();
 
 						builder.log.minor('Formatting markup');
 					} catch (err) {
@@ -148,11 +129,7 @@ export default function ({
 									const replacer = currentValue.many ? 'replaceAll' : 'replace';
 
 									if (!currentValue.from.startsWith('<!-- inject:sessionUUID:')) {
-										builder.log.minor(
-											`Replacing ${currentValue.many ? 'all ' : ''}'${currentValue.from}' → '${
-												currentValue.to
-											}'`
-										);
+										builder.log.minor(`Replacing ${currentValue.many ? 'all ' : ''}'${currentValue.from}' → '${currentValue.to}'`);
 									}
 
 									return previousValue[replacer](currentValue.from, currentValue.to);
@@ -187,9 +164,7 @@ async function compress(directory) {
 		filesOnly: true
 	});
 
-	await Promise.all(
-		files.map((file) => Promise.all([compress_file(file, 'gz'), compress_file(file, 'br')]))
-	);
+	await Promise.all(files.map((file) => Promise.all([compress_file(file, 'gz'), compress_file(file, 'br')])));
 }
 
 /**
@@ -216,19 +191,7 @@ async function compress_file(file, format = 'gz') {
 
 async function getPrettierConfig() {
 	const explorer = cosmiconfig('prettier', {
-		searchPlaces: [
-			'package.json',
-			'.prettierrc',
-			'.prettierrc.json',
-			'.prettierrc.yaml',
-			'.prettierrc.yml',
-			'.prettierrc.json5',
-			'.prettierrc.js',
-			'.prettierrc.cjs',
-			'prettier.config.js',
-			'prettier.config.cjs',
-			'.prettierrc.toml'
-		],
+		searchPlaces: ['package.json', '.prettierrc', '.prettierrc.json', '.prettierrc.yaml', '.prettierrc.yml', '.prettierrc.json5', '.prettierrc.js', '.prettierrc.cjs', 'prettier.config.js', 'prettier.config.cjs', '.prettierrc.toml'],
 		loaders: {
 			'.toml': (filePath, content) => {
 				try {
