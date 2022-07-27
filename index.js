@@ -17,171 +17,179 @@ const pipe = promisify(pipeline);
 
 /** @type {import('.')} */
 export default function ({
-  pages = 'build',
-  assets = pages,
-  fallback,
-  precompress = false,
-  minify = false,
-  injectTo = {},
-  targetExtension = '.html',
-  replace = []
+	pages = 'build',
+	assets = pages,
+	fallback,
+	precompress = false,
+	minify = false,
+	injectTo = {},
+	prettify = true,
+	targetExtension = '.html',
+	replace = []
 } = {}) {
-  return {
-    name: 'sveltekit-adapter-html-like',
+	return {
+		name: 'sveltekit-adapter-html-like',
 
-    async adapt(builder) {
-      builder.rimraf(assets);
-      builder.rimraf(pages);
+		async adapt(builder) {
+			if (minify && prettify) {
+				throw Error('You can not minify and prettify at the same time');
+			}
 
-      builder.writePrerendered(pages, {fallback});
-      builder.writeClient(assets);
+			builder.rimraf(assets);
+			builder.rimraf(pages);
 
-      if (precompress) {
-        if (pages === assets) {
-          builder.log.minor('Compressing assets and pages');
-          await compress(assets);
-        } else {
-          builder.log.minor('Compressing assets');
-          await compress(assets);
+			builder.writePrerendered(pages, { fallback });
+			builder.writeClient(assets);
 
-          builder.log.minor('Compressing pages');
-          await compress(pages);
-        }
-      }
+			if (precompress) {
+				if (pages === assets) {
+					builder.log.minor('Compressing assets and pages');
+					await compress(assets);
+				} else {
+					builder.log.minor('Compressing assets');
+					await compress(assets);
 
-      if (pages === assets) {
-        builder.log(`Wrote site to "${pages}"`);
-      } else {
-        builder.log(`Wrote pages to "${pages}" and assets to "${assets}"`);
-      }
+					builder.log.minor('Compressing pages');
+					await compress(pages);
+				}
+			}
 
-      const sessionUUID = crypto.randomUUID();
-      const htmlFiles = await glob('**/*.html', {
-        cwd: pages,
-        dot: true,
-        absolute: true,
-        filesOnly: true
-      });
+			if (pages === assets) {
+				builder.log(`Wrote site to "${pages}"`);
+			} else {
+				builder.log(`Wrote pages to "${pages}" and assets to "${assets}"`);
+			}
 
-      await Promise.all(
-        htmlFiles.map(async (htmlFile) => {
-          const htmlContents = await readFile(htmlFile, 'utf8');
-          const dom = new JSDOM(htmlContents);
+			const sessionUUID = crypto.randomUUID();
+			const htmlFiles = await glob('**/*.html', {
+				cwd: pages,
+				dot: true,
+				absolute: true,
+				filesOnly: true
+			});
 
-          const targetElements = Object.keys(injectTo);
+			await Promise.all(
+				htmlFiles.map(async (htmlFile) => {
+					const htmlContents = await readFile(htmlFile, 'utf8');
+					const dom = new JSDOM(htmlContents);
 
-          targetElements.map((targetElement) => {
-            if (!['head', 'body'].includes(targetElement)) {
-              builder.log.warn(`Skipping unsupported injection element: ${targetElement}`);
-              return;
-            }
+					const targetElements = Object.keys(injectTo);
 
-            const injectToPositions = Object.keys(injectTo[targetElement]);
+					targetElements.map((targetElement) => {
+						if (!['head', 'body'].includes(targetElement)) {
+							builder.log.warn(`Skipping unsupported injection element: ${targetElement}`);
+							return;
+						}
 
-            injectToPositions.map((injectToPosition) => {
-              if (
-                !['beforebegin', 'afterbegin', 'beforeend', 'afterend'].includes(injectToPosition)
-              ) {
-                builder.log.warn(
-                  `Skipping unsupported insertAdjacentHTML position: ${injectToPosition}`
-                );
-                return;
-              }
+						const injectToPositions = Object.keys(injectTo[targetElement]);
 
-              const injectToPositions = Array.isArray(injectTo[targetElement][injectToPosition])
-                ? injectTo[targetElement][injectToPosition]
-                : Array(injectTo[targetElement][injectToPosition]);
+						injectToPositions.map((injectToPosition) => {
+							if (
+								!['beforebegin', 'afterbegin', 'beforeend', 'afterend'].includes(injectToPosition)
+							) {
+								builder.log.warn(
+									`Skipping unsupported insertAdjacentHTML position: ${injectToPosition}`
+								);
+								return;
+							}
 
-              injectToPositions.map((injectToText) => {
-                const injectToHash = crypto.createHash('sha256').update(injectToText).digest('hex');
-                const injectToTag = `<!-- inject:${sessionUUID}:${injectToHash} -->`;
+							const injectToPositions = Array.isArray(injectTo[targetElement][injectToPosition])
+								? injectTo[targetElement][injectToPosition]
+								: Array(injectTo[targetElement][injectToPosition]);
 
-                if (!replace.some((item) => item.from === injectToTag)) {
-                  replace.push({
-                    from: injectToTag,
-                    to: injectToText
-                  });
-                }
+							injectToPositions.map((injectToText) => {
+								const injectToHash = crypto.createHash('sha256').update(injectToText).digest('hex');
+								const injectToTag = `<!-- inject:${sessionUUID}:${injectToHash} -->`;
 
-                builder.log.minor(`Injecting to ${injectToPosition}: '${injectToText}'`);
-                dom.window.document[targetElement].insertAdjacentHTML(
-                  injectToPosition,
-                  injectToTag
-                );
-              });
-            });
-          });
+								if (!replace.some((item) => item.from === injectToTag)) {
+									replace.push({
+										from: injectToTag,
+										to: injectToText
+									});
+								}
 
-          let outputHTML;
+								builder.log.minor(`Injecting to ${injectToPosition}: '${injectToText}'`);
+								dom.window.document[targetElement].insertAdjacentHTML(
+									injectToPosition,
+									injectToTag
+								);
+							});
+						});
+					});
 
-          try {
-            outputHTML = minify
-              ? await minifier(dom.serialize(), {
-                  collapseWhitespace: true,
-                  minifyCSS: true,
-                  minifyJS: true,
-                  removeComments: false,
-                  removeRedundantAttributes: true,
-                  useShortDoctype: true
-                })
-              : prettier.format(dom.serialize(), await getPrettierConfig());
-            builder.log.minor('Formatting markup');
-          } catch (err) {
-            builder.log.error('Formatting markup failed');
-            throw Error(err);
-          }
+					let outputHTML;
 
-          const outFile = `${basename(htmlFile, '.html')}${targetExtension}`;
-          const outPath = join(dirname(htmlFile), outFile);
+					try {
+						outputHTML = minify
+							? await minifier(dom.serialize(), {
+									collapseWhitespace: true,
+									minifyCSS: true,
+									minifyJS: true,
+									removeComments: false,
+									removeRedundantAttributes: true,
+									useShortDoctype: true
+							  })
+							: prettify
+							? prettier.format(dom.serialize(), await getPrettierConfig())
+							: dom.serialize();
 
-          const phpContents =
-            replace && Object.values(replace)?.length
-              ? replace.reduce((previousValue, currentValue) => {
-                  const replacer = currentValue.many ? 'replaceAll' : 'replace';
+						builder.log.minor('Formatting markup');
+					} catch (err) {
+						builder.log.error('Formatting markup failed');
+						throw Error(err);
+					}
 
-                  if (!currentValue.from.startsWith('<!-- inject:sessionUUID:')) {
-                    builder.log.minor(
-                      `Replacing ${currentValue.many ? 'all ' : ''}'${currentValue.from}' → '${
-                        currentValue.to
-                      }'`
-                    );
-                  }
+					const outFile = `${basename(htmlFile, '.html')}${targetExtension}`;
+					const outPath = join(dirname(htmlFile), outFile);
 
-                  return previousValue[replacer](currentValue.from, currentValue.to);
-                }, outputHTML)
-              : outputHTML;
+					const phpContents =
+						replace && Object.values(replace)?.length
+							? replace.reduce((previousValue, currentValue) => {
+									const replacer = currentValue.many ? 'replaceAll' : 'replace';
 
-          try {
-            builder.log.minor(`Writing to ${relative(pages, outPath)}`);
-            await writeFile(outPath, phpContents);
+									if (!currentValue.from.startsWith('<!-- inject:sessionUUID:')) {
+										builder.log.minor(
+											`Replacing ${currentValue.many ? 'all ' : ''}'${currentValue.from}' → '${
+												currentValue.to
+											}'`
+										);
+									}
 
-            if (outPath !== htmlFile) {
-              builder.log.minor(`Deleting ${relative(pages, htmlFile)}`);
-              builder.rimraf(htmlFile);
-            }
-          } catch (err) {
-            throw Error(err);
-          }
-        })
-      );
-    }
-  };
+									return previousValue[replacer](currentValue.from, currentValue.to);
+							  }, outputHTML)
+							: outputHTML;
+
+					try {
+						builder.log.minor(`Writing to ${relative(pages, outPath)}`);
+						await writeFile(outPath, phpContents);
+
+						if (outPath !== htmlFile) {
+							builder.log.minor(`Deleting ${relative(pages, htmlFile)}`);
+							builder.rimraf(htmlFile);
+						}
+					} catch (err) {
+						throw Error(err);
+					}
+				})
+			);
+		}
+	};
 }
 
 /**
  * @param {string} directory
  */
 async function compress(directory) {
-  const files = await glob('**/*.{html,js,json,css,svg,xml,wasm}', {
-    cwd: directory,
-    dot: true,
-    absolute: true,
-    filesOnly: true
-  });
+	const files = await glob('**/*.{html,js,json,css,svg,xml,wasm}', {
+		cwd: directory,
+		dot: true,
+		absolute: true,
+		filesOnly: true
+	});
 
-  await Promise.all(
-    files.map((file) => Promise.all([compress_file(file, 'gz'), compress_file(file, 'br')]))
-  );
+	await Promise.all(
+		files.map((file) => Promise.all([compress_file(file, 'gz'), compress_file(file, 'br')]))
+	);
 }
 
 /**
@@ -189,65 +197,67 @@ async function compress(directory) {
  * @param {'gz' | 'br'} format
  */
 async function compress_file(file, format = 'gz') {
-  const compress =
-    format == 'br'
-      ? zlib.createBrotliCompress({
-          params: {
-            [zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_TEXT,
-            [zlib.constants.BROTLI_PARAM_QUALITY]: zlib.constants.BROTLI_MAX_QUALITY,
-            [zlib.constants.BROTLI_PARAM_SIZE_HINT]: statSync(file).size
-          }
-        })
-      : zlib.createGzip({ level: zlib.constants.Z_BEST_COMPRESSION });
+	const compress =
+		format == 'br'
+			? zlib.createBrotliCompress({
+					params: {
+						[zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_TEXT,
+						[zlib.constants.BROTLI_PARAM_QUALITY]: zlib.constants.BROTLI_MAX_QUALITY,
+						[zlib.constants.BROTLI_PARAM_SIZE_HINT]: statSync(file).size
+					}
+			  })
+			: zlib.createGzip({ level: zlib.constants.Z_BEST_COMPRESSION });
 
-  const source = createReadStream(file);
-  const destination = createWriteStream(`${file}.${format}`);
+	const source = createReadStream(file);
+	const destination = createWriteStream(`${file}.${format}`);
 
-  await pipe(source, compress, destination);
+	await pipe(source, compress, destination);
 }
 
 async function getPrettierConfig() {
-  const explorer = cosmiconfig('prettier', {
-    searchPlaces: [
-      'package.json',
-      '.prettierrc',
-      '.prettierrc.json',
-      '.prettierrc.yaml',
-      '.prettierrc.yml',
-      '.prettierrc.json5',
-      '.prettierrc.js',
-      '.prettierrc.cjs',
-      'prettier.config.js',
-      'prettier.config.cjs',
-      '.prettierrc.toml'
-    ],
-    loaders: {
-      '.toml': (filePath, content) => {
-        try {
-          return TOML.parse(content);
-        } catch (error) {
-          error.message = `TOML Error in ${filePath}:\n${error.message}`;
-          throw error;
-        }
-      },
-      '.json5': (filePath, content) => {
-        try {
-          return JSON5.parse(content);
-        } catch (error) {
-          error.message = `TOML Error in ${filePath}:\n${error.message}`;
-          throw error;
-        }
-      },
-      noExt: defaultLoaders['.json']
-    }
-  });
+	const explorer = cosmiconfig('prettier', {
+		searchPlaces: [
+			'package.json',
+			'.prettierrc',
+			'.prettierrc.json',
+			'.prettierrc.yaml',
+			'.prettierrc.yml',
+			'.prettierrc.json5',
+			'.prettierrc.js',
+			'.prettierrc.cjs',
+			'prettier.config.js',
+			'prettier.config.cjs',
+			'.prettierrc.toml'
+		],
+		loaders: {
+			'.toml': (filePath, content) => {
+				try {
+					return TOML.parse(content);
+				} catch (error) {
+					error.message = `TOML Error in ${filePath}:\n${error.message}`;
+					throw error;
+				}
+			},
+			'.json5': (filePath, content) => {
+				try {
+					return JSON5.parse(content);
+				} catch (error) {
+					error.message = `TOML Error in ${filePath}:\n${error.message}`;
+					throw error;
+				}
+			},
+			noExt: defaultLoaders['.json']
+		}
+	});
 
-  let results = await explorer.search();
-  if (results) {
-    return results.config;
-  }
-  return {
-    parser: 'html',
-    printWidth: 120
-  }
+	let results = await explorer.search();
+
+	if (results) {
+		return results.config;
+	}
+
+	return {
+		parser: 'html',
+		printWidth: Infinity
+	};
 }
