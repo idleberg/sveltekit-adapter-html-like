@@ -1,79 +1,79 @@
 {
-  "name": "sveltekit-adapter-html-like",
-  "description": "SvelteKit adapter for HTML-like template engines such as PHP, Blade, Handlebars, etc.",
-  "version": "0.2.1",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/idleberg/sveltekit-adapter-html-like"
-  },
-  "license": "MIT",
-  "keywords": [
-    "sveltekit-adapter",
-    "svelte",
-    "sveltekit",
-    "php",
-    "blade",
-    "embedded ruby",
-    "erb",
-    "moustache",
-    "handlebars",
-    "ejs"
-  ],
-  "type": "module",
-  "files": [
-    "index.js",
-    "index.d.ts"
-  ],
-  "main": "index.js",
-  "exports": {
-    ".": {
-      "import": "./index.js"
-    }
-  },
-  "types": "index.d.ts",
-  "scripts": {
-    "prepare": "husky install",
-    "check-format": "prettier --check . --ignore-path .gitignore",
-    "lint:md": "remark . --quiet --frail --ignore-path .gitignore",
-    "lint:js": "eslint --ignore-path .gitignore \"**/*.{ts,js,svelte}\"",
-    "lint": "npm-run-all --parallel lint:*",
-    "test": "npm run lint"
-  },
-  "dependencies": {
-    "@iarna/toml": "^2.2.5",
-    "cosmiconfig": "^7.0.1",
-    "eslint-plugin-node": "^11.1.0",
-    "html-minifier-terser": "^7.0.0-alpha.1",
-    "jsdom": "^19.0.0",
-    "json5": "^2.2.1",
-    "prettier": "^2.5.1",
-    "tiny-glob": "^0.2.9",
-    "vite": "^3.0.2"
-  },
-  "devDependencies": {
-    "@sveltejs/eslint-config": "github:sveltejs/eslint-config#v5.8.0",
-    "@sveltejs/kit": "^1.0.0-next.391",
-    "@typescript-eslint/eslint-plugin": "^5.13.0",
-    "@typescript-eslint/parser": "^5.13.0",
-    "eslint": "^8.10.0",
-    "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-json": "^3.1.0",
-    "eslint-plugin-svelte3": "^3.4.1",
-    "husky": "^7.0.4",
-    "lint-staged": "^12.3.4",
-    "npm-run-all": "^4.1.5",
-    "remark-cli": "^10.0.1",
-    "remark-preset-lint-recommended": "^6.1.2",
-    "remark-preset-prettier": "^1.0.0",
-    "sirv": "^2.0.2",
-    "svelte": "^3.46.4",
-    "typescript": "^4.5.5"
-  },
-  "lint-staged": {
-    "*.(|js|ts|json)": [
-      "eslint --cache --fix",
-      "prettier --write"
-    ],
-    "*.md": "prettier --write"
-  }
+	"name": "sveltekit-adapter-html-like",
+	"description": "SvelteKit adapter for HTML-like template engines such as PHP, Blade, Handlebars, etc.",
+	"version": "0.2.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/idleberg/sveltekit-adapter-html-like"
+	},
+	"license": "MIT",
+	"keywords": [
+		"sveltekit-adapter",
+		"svelte",
+		"sveltekit",
+		"php",
+		"blade",
+		"embedded ruby",
+		"erb",
+		"moustache",
+		"handlebars",
+		"ejs"
+	],
+	"type": "module",
+	"files": [
+		"index.js",
+		"index.d.ts"
+	],
+	"main": "index.js",
+	"exports": {
+		".": {
+			"import": "./index.js"
+		}
+	},
+	"types": "index.d.ts",
+	"scripts": {
+		"prepare": "husky install",
+		"check-format": "prettier --check . --ignore-path .gitignore",
+		"lint:md": "remark . --quiet --frail --ignore-path .gitignore",
+		"lint:js": "eslint --ignore-path .gitignore \"**/*.{ts,js,svelte}\"",
+		"lint": "npm-run-all --parallel lint:*",
+		"test": "npm run lint"
+	},
+	"dependencies": {
+		"@iarna/toml": "^2.2.5",
+		"cosmiconfig": "^7.0.1",
+		"eslint-plugin-node": "^11.1.0",
+		"html-minifier-terser": "^7.0.0-alpha.1",
+		"jsdom": "^19.0.0",
+		"json5": "^2.2.1",
+		"prettier": "^2.5.1",
+		"tiny-glob": "^0.2.9",
+		"vite": "^3.0.2"
+	},
+	"devDependencies": {
+		"@sveltejs/eslint-config": "github:sveltejs/eslint-config#v5.8.0",
+		"@sveltejs/kit": "^1.0.0-next.391",
+		"@typescript-eslint/eslint-plugin": "^5.13.0",
+		"@typescript-eslint/parser": "^5.13.0",
+		"eslint": "^8.10.0",
+		"eslint-plugin-import": "^2.25.4",
+		"eslint-plugin-json": "^3.1.0",
+		"eslint-plugin-svelte3": "^3.4.1",
+		"husky": "^7.0.4",
+		"lint-staged": "^12.3.4",
+		"npm-run-all": "^4.1.5",
+		"remark-cli": "^10.0.1",
+		"remark-preset-lint-recommended": "^6.1.2",
+		"remark-preset-prettier": "^1.0.0",
+		"sirv": "^2.0.2",
+		"svelte": "^3.46.4",
+		"typescript": "^4.5.5"
+	},
+	"lint-staged": {
+		"*.(js|ts|json)": [
+			"eslint --cache --fix",
+			"prettier --write"
+		],
+		"*.md": "prettier --write"
+	}
 }
