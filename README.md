@@ -1,6 +1,7 @@
 # sveltekit-adapter-html-like
 
 > **Warning**
+> 
 > SvelteKit is still under heavy development and introduces breaking changes every now and then. If this adapter doesn't work in your setup, make sure to use `@svelte/kit@1.0.0-next.428`.
 
 [![npm](https://flat.badgen.net/npm/license/sveltekit-adapter-html-like)](https://www.npmjs.org/package/sveltekit-adapter-html-like)
