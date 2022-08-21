@@ -49,8 +49,7 @@
 		"tiny-glob": "^0.2.9"
 	},
 	"devDependencies": {
-		"@sveltejs/eslint-config": "github:sveltejs/eslint-config#v5.8.0",
-		"@sveltejs/kit": "^1.0.0-next.396",
+		"@sveltejs/kit": "^1.0.0-next.405",
 		"@types/html-minifier-terser": "^6.1.0",
 		"@types/jsdom": "^20.0.0",
 		"@types/prettier": "^2.6.4",
