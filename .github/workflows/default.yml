@@ -1,8 +1,20 @@
 name: CI
 
 on:
-- push
-- pull_request
+  push:
+    paths:
+    - 'adapter.js'
+    - 'index.js'
+    - 'index.d.js'
+    - 'package.json'
+    - 'pnpm-lock.yaml'
+  pull_request:
+    paths:
+    - 'adapter.js'
+    - 'index.js'
+    - 'index.d.js'
+    - 'package.json'
+    - 'pnpm-lock.yaml'
 
 jobs:
   default:
@@ -27,7 +39,6 @@ jobs:
         with:
           version: 7
           run_install: false
-
 
       - name: Get pnpm store directory
         id: pnpm-cache
