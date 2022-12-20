@@ -21,8 +21,11 @@
 	],
 	"type": "module",
 	"files": [
+		"adapter.js",
 		"index.js",
-		"index.d.ts"
+		"index.d.ts",
+		"LICENSE",
+		"README.md"
 	],
 	"main": "index.js",
 	"exports": {
