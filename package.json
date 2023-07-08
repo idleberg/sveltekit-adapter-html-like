@@ -24,7 +24,7 @@
 		"adapter.js",
 		"index.js",
 		"index.d.ts",
-		"platform.js",
+		"platforms.js",
 		"LICENSE",
 		"README.md"
 	],
