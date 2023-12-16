@@ -19,15 +19,11 @@ export interface AdapterReplace {
 }
 
 export interface AdapterOptions {
+	pages?: string;
 	assets?: string;
 	fallback?: string;
-	injectTo?: AdapterInjectTargets;
-	minify?: boolean;
-	pages?: string;
 	precompress?: boolean;
-	prettify?: boolean;
-	replace?: AdapterReplace[];
-	targetExtension?: string;
+	strict?: boolean;
 }
 
 export default function plugin(options?: AdapterOptions): Adapter;
