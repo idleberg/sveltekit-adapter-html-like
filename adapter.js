@@ -20,6 +20,7 @@ const defaultOptions = {
 	minify: false,
 	injectTo: {},
 	prettify: true,
+	strict: false,
 	targetExtension: '.html',
 	replace: []
 };
@@ -93,10 +94,10 @@ export async function transformFiles(builder, userOptions) {
 							removeComments: false,
 							removeRedundantAttributes: true,
 							useShortDoctype: true
-						})
+					  })
 					: options.prettify
-						? prettier.format(dom.serialize(), await getPrettierConfig())
-						: dom.serialize();
+					? prettier.format(dom.serialize(), await getPrettierConfig())
+					: dom.serialize();
 
 				builder.log.minor('Formatting markup');
 			} catch (err) {
@@ -121,7 +122,7 @@ export async function transformFiles(builder, userOptions) {
 							}
 
 							return previousValue[replacer](currentValue.from, currentValue.to);
-						}, outputHTML)
+					  }, outputHTML)
 					: outputHTML;
 
 			try {
