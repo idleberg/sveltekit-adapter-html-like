@@ -1,15 +1,15 @@
 import { Adapter } from '@sveltejs/kit';
 
 export interface AdapterInjectTargets {
-	[head?: string]: AdapterInjectPositions;
-	[body?: string]: AdapterInjectPositions;
+	head?: AdapterInjectPositions;
+	body?: AdapterInjectPositions;
 }
 
 export interface AdapterInjectPositions {
-	[beforebegin?: string]: string | string[];
-	[afterbegin?: string]: string | string[];
-	[beforeend?: string]: string | string[];
-	[afterend?: string]: string | string[];
+	beforebegin?: string | string[];
+	afterbegin?: string | string[];
+	beforeend?: string | string[];
+	afterend?: string | string[];
 }
 
 export interface AdapterReplace {
@@ -19,11 +19,16 @@ export interface AdapterReplace {
 }
 
 export interface AdapterOptions {
-	pages?: string;
 	assets?: string;
 	fallback?: string;
+	injectTo?: AdapterInjectTargets;
+	minify?: boolean;
+	pages?: string;
 	precompress?: boolean;
+	prettify?: boolean;
+	replace?: AdapterReplace[];
 	strict?: boolean;
+	targetExtension?: string;
 }
 
 export default function plugin(options?: AdapterOptions): Adapter;
