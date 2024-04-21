@@ -17,6 +17,7 @@ on:
     - 'platform.js'
     - 'package.json'
     - 'pnpm-lock.yaml'
+  workflow_dispatch:
 
 jobs:
   default:
