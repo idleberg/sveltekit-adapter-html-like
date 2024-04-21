@@ -94,7 +94,7 @@ export async function transformFiles(builder, userOptions) {
 							removeComments: false,
 							removeRedundantAttributes: true,
 							useShortDoctype: true
-					  })
+						})
 					: options.prettify
 					? prettier.format(dom.serialize(), await getPrettierConfig())
 					: dom.serialize();
@@ -122,7 +122,7 @@ export async function transformFiles(builder, userOptions) {
 							}
 
 							return previousValue[replacer](currentValue.from, currentValue.to);
-					  }, outputHTML)
+						}, outputHTML)
 					: outputHTML;
 
 			try {
