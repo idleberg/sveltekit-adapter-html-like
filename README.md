@@ -4,9 +4,9 @@
 >
 > SvelteKit is still under heavy development and introduces breaking changes every now and then. If this adapter doesn't work in your setup, make sure to use `@svelte/kit@1.0.0-next.428`.
 
-[![npm](https://flat.badgen.net/npm/license/sveltekit-adapter-html-like)](https://www.npmjs.org/package/sveltekit-adapter-html-like)
-[![npm](https://flat.badgen.net/npm/v/sveltekit-adapter-html-like)](https://www.npmjs.org/package/sveltekit-adapter-html-like)
-[![CI](https://img.shields.io/github/actions/workflow/status/idleberg/sveltekit-adapter-html-like/default.yml?style=flat-square)](https://github.com/idleberg/sveltekit-adapter-html-like/actions)
+[![License](https://img.shields.io/github/license/idleberg/sveltekit-adapter-html-like?color=blue&style=for-the-badge)](https://github.com/idleberg/sveltekit-adapter-html-like/blob/main/LICENSE)
+[![Version](https://img.shields.io/npm/v/sveltekit-adapter-html-like?style=for-the-badge)](https://www.npmjs.org/package/sveltekit-adapter-html-like)
+[![Build](https://img.shields.io/github/actions/workflow/status/idleberg/sveltekit-adapter-html-like/test.yml?style=for-the-badge)](https://github.com/idleberg/sveltekit-adapter-html-like/actions)
 
 [Adapter](https://kit.svelte.dev/docs#adapters) for SvelteKit apps that prerenders your site as static files for template engines such as PHP, Blade, Embedded Ruby (ERB), Handlebars, EJS etc.
 
