@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
 import process from 'node:process';
+import { gunzipSync } from 'node:zlib';
 import { expect, test } from '@playwright/test';
 
 const cwd = process.cwd();
@@ -69,6 +70,17 @@ test('replaces every occurrence of a string when `many` is set', () => {
 	// both the class name and the text content are rewritten
 	expect(contents).toContain('class="replaced"');
 	expect(contents).toContain('>replaced<');
+});
+
+test('precompresses the transformed page, not the original', () => {
+	// the compressed copy is what a client sending `Accept-Encoding: gzip` actually receives, so it
+	// has to carry the injections and replacements too
+	const gzipped = gunzipSync(fs.readFileSync(`${cwd}/build/index.html.gz`)).toString('utf8');
+
+	expect(gzipped).toEqual(read('index.html'));
+	expect(gzipped).toContain('<?php body_open(); ?>');
+	expect(gzipped).toContain('<html lang="en" data-replaced="once">');
+	expect(gzipped).not.toContain('replace-me');
 });
 
 test('prettifies the output by default', () => {

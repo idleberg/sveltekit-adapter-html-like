@@ -70,6 +70,14 @@ See https://svelte.dev/docs/kit/page-options#prerender for more details`
 				await builder.generateFallback(path.join(pages, fallback));
 			}
 
+			// Before compressing, not after: the compressed copies have to be made from the injected,
+			// replaced and formatted markup, or a client sending `Accept-Encoding: gzip` is served the
+			// untransformed page. This also renames pages to `targetExtension`, and `builder.compress`
+			// only knows a fixed set of extensions (`.html`, `.js`, `.css`, …) — so a non-HTML
+			// `targetExtension` leaves pages uncompressed, which is what you want for markup a server
+			// is going to execute anyway.
+			await transformFiles(builder, { ...options, pages });
+
 			if (precompress) {
 				builder.log.minor('Compressing assets and pages');
 				if (pages === assets) {
@@ -86,8 +94,6 @@ See https://svelte.dev/docs/kit/page-options#prerender for more details`
 			}
 
 			if (!options) platform?.done(builder);
-
-			await transformFiles(builder, { ...options, pages });
 		}
 	};
 }

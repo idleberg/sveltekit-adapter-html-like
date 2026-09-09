@@ -4,6 +4,7 @@ import adapter from '../../../index.js';
 const config = {
 	kit: {
 		adapter: adapter({
+			precompress: true,
 			injectTo: {
 				head: {
 					// a single string, not an array

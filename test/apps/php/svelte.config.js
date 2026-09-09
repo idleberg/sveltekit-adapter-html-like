@@ -5,6 +5,7 @@ const config = {
 	kit: {
 		adapter: adapter({
 			targetExtension: '.php',
+			precompress: true,
 			minify: true,
 			injectTo: {
 				head: {

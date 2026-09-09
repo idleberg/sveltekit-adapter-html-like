@@ -19,6 +19,16 @@ test('removes the original HTML files, at any depth', () => {
 	assert.deepEqual(html, []);
 });
 
+test('leaves no precompressed copies of the untransformed pages behind', () => {
+	// `precompress` used to run before the transform, leaving `index.html.gz` orphans holding the
+	// original markup next to the `.php` file that actually gets served
+	const orphans = readdirSync(build, { recursive: true }).filter(
+		(file) => typeof file === 'string' && /\.html\.(gz|br)$/.test(file)
+	);
+
+	assert.deepEqual(orphans, []);
+});
+
 test('leaves non-HTML assets alone', () => {
 	assert.ok(existsSync(`${build}/_app`));
 });

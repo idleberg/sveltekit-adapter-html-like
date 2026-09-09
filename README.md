@@ -51,7 +51,7 @@ The directory to write static assets (the contents of `static`, plus client-side
 ### fallback
 
 Type: `string`  
-Default: `null`
+Default: `undefined`
 
 Specify a fallback page for SPA mode, e.g. `index.html` or `200.html` or `404.html`.
 
@@ -61,6 +61,8 @@ Type: `boolean`
 Default: `false`
 
 If `true`, precompresses files with brotli and gzip. This will generate `.br` and `.gz` files.
+
+Compression runs after the markup has been transformed, so the compressed copies match what the adapter actually writes. Note that SvelteKit only compresses a fixed set of extensions (`.html`, `.js`, `.css`, `.json`, `.svg`, `.xml`, `.wasm`, `.txt`, `.md`, `.mdx`), so setting a [`targetExtension`](#targetextension) such as `.php` leaves your pages uncompressed — which is usually what you want, since the server executes those rather than serving them as-is. Assets are compressed either way.
 
 ### injectTo
 
