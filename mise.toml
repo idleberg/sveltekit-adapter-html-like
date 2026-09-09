@@ -1,0 +1,13 @@
+[tools]
+node = "24"
+hk = "latest"
+pkl = "latest"
+
+[env]
+HK_MISE = 1
+
+[hooks]
+postinstall = "hk install --mise"
+
+[settings]
+node.corepack = true

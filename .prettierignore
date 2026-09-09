@@ -1,0 +1,3 @@
+pnpm-lock.yaml
+test/apps/*/build
+test/apps/*/.svelte-kit

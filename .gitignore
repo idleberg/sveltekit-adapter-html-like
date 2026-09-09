@@ -1,17 +1,22 @@
 # dependencies
-bower_components/
 node_modules/
-vendor/
 
 # package manager files
 npm-debug.log*
 yarn-error.log
 yarn.lock
 shrinkwrap.yaml
+.pnpm-debug.log*
 
 # development
-.eslintcache
+.DS_Store
 tsconfig.tsbuildinfo
+
+# tests
+/test/apps/*/.svelte-kit
+/test/apps/*/build
+/test/apps/*/test-results
+/test/apps/*/playwright-report
 
 # project specific
 todo.md

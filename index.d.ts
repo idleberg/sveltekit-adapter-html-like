@@ -1,15 +1,15 @@
 import { Adapter } from '@sveltejs/kit';
 
-export interface AdapterInjectTargets {
-	head?: AdapterInjectPositions;
-	body?: AdapterInjectPositions;
-}
-
 export interface AdapterInjectPositions {
 	beforebegin?: string | string[];
 	afterbegin?: string | string[];
 	beforeend?: string | string[];
 	afterend?: string | string[];
+}
+
+export interface AdapterInjectTargets {
+	head?: AdapterInjectPositions;
+	body?: AdapterInjectPositions;
 }
 
 export interface AdapterReplace {
@@ -19,15 +19,21 @@ export interface AdapterReplace {
 }
 
 export interface AdapterOptions {
+	pages?: string;
 	assets?: string;
 	fallback?: string;
-	injectTo?: AdapterInjectTargets;
-	minify?: boolean;
-	pages?: string;
 	precompress?: boolean;
-	prettify?: boolean;
-	replace?: AdapterReplace[];
 	strict?: boolean;
+
+	/** Markup injected into `<head>` or `<body>`, keyed by `insertAdjacentHTML` position. */
+	injectTo?: AdapterInjectTargets;
+	/** Minify the output instead of prettifying it. */
+	minify?: boolean;
+	/** Prettify the output. Ignored when `minify` is `true`. Defaults to `true`. */
+	prettify?: boolean;
+	/** String replacements run on every page, after formatting. */
+	replace?: AdapterReplace[];
+	/** Extension of the written files, e.g. `.php`. Defaults to `.html`. */
 	targetExtension?: string;
 }
 

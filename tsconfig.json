@@ -4,11 +4,18 @@
 		"checkJs": true,
 		"noEmit": true,
 		"noImplicitAny": true,
-		"module": "es2022",
+		"strictNullChecks": true,
 		"target": "es2022",
-		"moduleResolution": "node",
-		"allowSyntheticDefaultImports": true,
-		"baseUrl": "."
+		"module": "node16",
+		"moduleResolution": "node16",
+		"allowSyntheticDefaultImports": true
 	},
-	"include": ["index.js"]
+	"include": [
+		"adapter.js",
+		"index.js",
+		"index.d.ts",
+		"internal.d.ts",
+		"platforms.js",
+		"test/utils.js"
+	]
 }

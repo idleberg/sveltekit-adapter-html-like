@@ -1,0 +1,29 @@
+amends "package://github.com/jdx/hk/releases/download/v1.58.1/hk@1.58.1#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.58.1/hk@1.58.1#/Builtins.pkl"
+
+// Prettier is the only linter, and CI runs it again. This is here so an unformatted file costs a
+// second rather than a pull request, not so it can be the only place the check happens.
+local linters = new Mapping<String, Step> {
+  // `Builtins.prettier` calls a bare `prettier`, which is not on PATH — it lives in the workspace's
+  // node_modules/.bin. Same globs, routed through pnpm.
+  ["prettier"] = (Builtins.prettier) {
+    check = "pnpm exec prettier --check {{files}}"
+    check_list_files = "pnpm exec prettier --list-different {{files}}"
+    fix = "pnpm exec prettier --write {{files}}"
+  }
+}
+
+hooks {
+  ["pre-commit"] {
+    fix = true
+    stash = "git"
+    steps = linters
+  }
+  ["fix"] {
+    fix = true
+    steps = linters
+  }
+  ["check"] {
+    steps = linters
+  }
+}

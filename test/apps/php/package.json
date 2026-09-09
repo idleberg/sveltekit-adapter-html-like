@@ -1,0 +1,17 @@
+{
+	"name": "test-php",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"test": "vite build && node --test"
+	},
+	"devDependencies": {
+		"@sveltejs/kit": "^2.70.3",
+		"@sveltejs/vite-plugin-svelte": "^7.3.0",
+		"svelte": "^5.57.0",
+		"vite": "^8.2.2"
+	}
+}
